@@ -1,40 +1,38 @@
-# ⚛️ Quantum Harmonic Oscillator Solver via LCU
+# Quantum Harmonic Oscillator Solver via LCU
 **Team:** Atypiqal | **Track:** C (Classiq) | **Event:** Q-volution Hackathon by Girls in Quantum
 
 [![Made with Classiq](https://img.shields.io/badge/Made%20with-Classiq-blue.svg)](https://www.classiq.io/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-## 📖 Abstract
+## Abstract
 This project implements a gate-based quantum algorithm to solve a system of linear differential equations (LDEs) describing a **Quantum Harmonic Oscillator**, based on the Linear Combination of Unitaries (LCU) algorithm proposed by *Tao Xin et al. (2020)*. 
 
 We successfully translated the theoretical mathematical model into a highly optimized quantum circuit using the **Classiq SDK (QMOD)**. By applying advanced mathematical simplifications to the unitary operators, we achieved the **theoretical global optimum in hardware efficiency (Width: 3 qubits, Depth: 13 gates)** while rigorously demonstrating the conservation of total energy ($1.0\text{J}$) within the system over time.
 
----
 
-## 🎯 1. The Physical & Mathematical Problem
+## The Physical & Mathematical Problem
 
 The mission requires solving the second-order differential equation for a harmonic oscillator:
-$$ y'' + y = 0, \quad y(0) = 1, \quad y'(0)=1 $$
+
+$$y'' + y = 0, \quad y(0) = 1, \quad y'(0)=1$$
 
 ### State-Space Reduction
 The LCU algorithm requires a first-order system of the form $\frac{dx(t)}{dt} = \mathcal{M}x(t) + b$. We mapped the physical variables to a 2D state vector $x(t) = [y(t), y'(t)]^T$, yielding:
 
-$$ \frac{d}{dt} \begin{pmatrix} y(t) \\ y'(t) \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix} \begin{pmatrix} y(t) \\ y'(t) \end{pmatrix} + \begin{pmatrix} 0 \\ 0 \end{pmatrix} $$
+$$\frac{d}{dt} \begin{pmatrix} y(t) \\ y'(t) \end{pmatrix} = \begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix} \begin{pmatrix} y(t) \\ y'(t) \end{pmatrix} + \begin{pmatrix} 0 \\ 0 \end{pmatrix} $$
 
 From this, we extract our core quantum components:
 *   System Matrix: $\mathcal{M} = i\sigma_y$
 *   Constant Vector: $b = 0$ (This perfectly zeroes out the second Taylor series, halving the required circuit depth).
 *   Initial State: $x(0) = [1, 1]^T$, which normalizes gracefully to the $|+\rangle$ state.
 
----
-
-## 🧠 2. Quantum Implementation & Optimizations (The LCU Model)
+## Quantum Implementation & Optimizations (The LCU Model)
 
 To solve $x(t) \approx \sum_{m=0}^{k} \frac{(\mathcal{M}t)^m}{m!} x(0)$, we chose a **Taylor order of $k=3$**. This is the perfect "sweet spot" that guarantees an accuracy $>99\%$ in the interval $t \in [0,1]$ while requiring only $\lceil \log_2(3+1) \rceil = 2$ ancilla qubits.
 
 ### The "Hardware-Aware" Operator Optimization
 The most resource-intensive part of the LCU algorithm is applying the multi-controlled operators $U_m = \mathcal{M}^m$. Since $\mathcal{M} = i\sigma_y$, we encoded the ancilla state as $|m_1 m_0\rangle$ (where $m = 2m_1 + m_0$), allowing us to decompose the operation:
-$$ U_m = (i\sigma_y)^{2m_1 + m_0} = (-I)^{m_1} \cdot (i\sigma_y)^{m_0} $$
+$$U_m = (i\sigma_y)^{2m_1 + m_0} = (-I)^{m_1} \cdot (i\sigma_y)^{m_0}$$
 
 **This mathematical breakthrough allowed us to build an ultra-shallow circuit:**
 1.  **For $m_0$:** A $RY(-\pi)$ gate controlled by the least significant ancilla qubit.
@@ -47,7 +45,7 @@ The diagram below illustrates our high-level optimized design using Classiq. Not
 ![Optimized LCU Logic](assets/circuit_diagram.jpg)
 
 <details>
-  <summary><b>🔍 View Full Gate-Level Decomposition (Depth: 13)</b></summary>
+  <summary><b>View Full Gate-Level Decomposition (Depth: 13)</b></summary>
   <br>
   This view shows the transpiled circuit into native gates, confirming the optimal depth of 13.
   <br><br>
@@ -55,8 +53,8 @@ The diagram below illustrates our high-level optimized design using Classiq. Not
 </details>
 
 <details>
-  <summary><b>🛠️ View the generated OpenQASM 2.0 code</b></summary>
-
+  <summary><b>View the generated OpenQASM 2.0 code</b></summary>
+  
   ```qasm
   OPENQASM 2.0;
   include "qelib1.inc";
@@ -217,9 +215,7 @@ The diagram below illustrates our high-level optimized design using Classiq. Not
 </details>
 
 
----
-
-## 📊 3. Physics Verification: Energy Conservation
+## Physics Verification: Energy Conservation
 
 We evaluated the circuit for $t \in [0, 1]$. To reconstruct the physical vector from the quantum normalized state, we post-selected the $|00\rangle$ ancilla subspace using **absolute probabilities** and applied the LCU normalization factor $S(t) = 1 + t + t^2/2 + t^3/6$.
 
@@ -229,9 +225,7 @@ We evaluated the circuit for $t \in [0, 1]$. To reconstruct the physical vector 
 *   Our simulated Quantum Potential Energy $V(t)$ and Kinetic Energy $K(t)$ perfectly match the exact analytical solutions.
 *   The Total Quantum Energy $E(t) = V(t) + K(t)$ remains remarkably constant near $1.0\text{J}$, with only $\approx \pm 3\%$ variance entirely attributable to the natural statistical shot-noise ($shots=2048$).
 
----
-
-## ⚙️ 4. Parametric & Hardware Efficiency Analysis
+## Parametric & Hardware Efficiency Analysis
 
 We utilized Classiq's Synthesis Engine to analyze the trade-offs of the NISQ era:
 
@@ -246,16 +240,15 @@ By sweeping the `bound` parameter in the `inplace_prepare_state` function, we in
 We forced the Classiq compiler to synthesize the model prioritizing `Depth` and then `Width`. Both strategies yielded identical metrics: **13 Gates (Depth) and 3 Qubits (Width)**. 
 **Conclusion:** Our mathematical substitution of $(-I)^m$ for a targetless $Z$-gate brought the base circuit to the **absolute theoretical global optimum**. There is no further mathematical compression possible for a $k=3$ LCU algorithm.
 
----
 
-## 📂 5. Repository Structure
+## Repository Structure
 
 *   `notebook.ipynb`: The main Jupyter Notebook containing the QMOD implementation, simulations, data processing, and Matplotlib visualizations.
 *   `One_Pager_Summary.pdf`: The 1-page executive summary required for the final submission.
 *   `assets/`: Folder containing the high-resolution output graphs and circuit diagrams.
-*   Link to the 3-minute video pitch: [YouTube/Drive Link]
+*   Link to the 3-minute video pitch: <link>
 
-## 🚀 6. How to Run
+## How to Run
 1. Clone this repository.
 2. Ensure you have the Classiq SDK installed: `pip install -U classiq`
 3. Install dependencies: `pip install numpy pandas matplotlib seaborn`
