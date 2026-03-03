@@ -250,7 +250,6 @@ We forced the Classiq compiler to synthesize the model prioritizing `Depth` and 
 
 ## How to Run
 1. Clone this repository.
-2. Ensure you have the Classiq SDK installed: `pip install -U classiq`
-3. Install dependencies: `pip install numpy pandas matplotlib seaborn`
-4. Authenticate your Classiq account: `classiq.authenticate()`
-5. Run all cells in `notebook.ipynb`.
+2. Enable the enviroment: `python3 -m venv .venv && source .venv/bin/activate`
+3. Install dependencies: `pip install -r requirements.txt`
+5. Run all cells in `jupyter lab`
