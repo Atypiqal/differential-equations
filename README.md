@@ -243,10 +243,9 @@ Our mathematical substitution of $(-I)^m$ for a targetless $Z$-gate brought the 
 
 ## Repository Structure
 
-*   `notebook.ipynb`: The main Jupyter Notebook containing the QMOD implementation, simulations, data processing, and Matplotlib visualizations.
-*   `One_Pager_Summary.pdf`: The 1-page executive summary required for the final submission.
+*   `main.ipynb`: The main Jupyter Notebook containing the QMOD implementation, simulations, data processing, and Matplotlib visualizations.
 *   `assets/`: Folder containing the high-resolution output graphs and circuit diagrams.
-*   Link to the 3-minute video pitch: https://www.youtube.com/watch?v=h73veN2eIzw
+*   Link to the video: https://www.youtube.com/watch?v=h73veN2eIzw
 
 ## How to Run
 1. Clone this repository.
