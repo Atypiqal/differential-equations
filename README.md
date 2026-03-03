@@ -238,7 +238,7 @@ By sweeping the `bound` parameter in the `inplace_prepare_state` function, we in
 ![Hardware Resources Graph](assets/resources.png)
 
 We forced the Classiq compiler to synthesize the model prioritizing `Depth` and then `Width`. Both strategies yielded identical metrics: **13 Gates (Depth) and 3 Qubits (Width)**. 
-**Conclusion:** Our mathematical substitution of $(-I)^m$ for a targetless $Z$-gate brought the base circuit to the **absolute theoretical global optimum**. There is no further mathematical compression possible for a $k=3$ LCU algorithm.
+Our mathematical substitution of $(-I)^m$ for a targetless $Z$-gate brought the base circuit to the **absolute theoretical global optimum**. There is no further mathematical compression possible for a $k=3$ LCU algorithm.
 
 
 ## Repository Structure
@@ -252,4 +252,5 @@ We forced the Classiq compiler to synthesize the model prioritizing `Depth` and 
 1. Clone this repository.
 2. Enable the enviroment: `python3 -m venv .venv && source .venv/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
-5. Run all cells in `jupyter lab`
+5. Run jupyter `jupyter lab`
+6. Run all ceils in `main.ipynb`
